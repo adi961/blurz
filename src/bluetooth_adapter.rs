@@ -18,6 +18,10 @@ impl BluetoothAdapter {
         }
     }
 
+    pub fn myFunc() {
+        bluetooth_utils::register_advertisement();
+    }
+
     pub fn init() -> Result<BluetoothAdapter, Box<Error>> {
         let adapters = try!(bluetooth_utils::get_adapters());
 

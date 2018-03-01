@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::error::Error;
 
 static DEVICE_INTERFACE: &'static str = "org.bluez.Device1";
+static ADVERTISEMENT_INTERFACE: &'static str = "org.bluez.LEAdvertisingManager1"
 
 #[derive(Clone, Debug)]
 pub struct BluetoothDevice {
@@ -32,8 +33,8 @@ impl BluetoothDevice {
         bluetooth_utils::set_property(DEVICE_INTERFACE, &self.object_path, prop, value)
     }
 
-    fn call_method(&self, method: &str, param: Option<&[MessageItem]>) -> Result<(), Box<Error>> {
-        bluetooth_utils::call_method(DEVICE_INTERFACE, &self.object_path, method, param)
+    fn call_method(&self, method: &str, param: Option<&[MessageItem]>, interface: &'static str) -> Result<(), Box<Error>> {
+        bluetooth_utils::call_method(interface, &self.object_path, method, param)
     }
 
 /*
@@ -219,33 +220,37 @@ impl BluetoothDevice {
  * Methods
  */
 
+    pub fn register_advertisement(&self) -> Result<(), Box<Error>> {
+        self.call_method("RegisterAdvertisement", param, ADVERTISEMENT_INTERFACE)
+    }
+
     // http://git.kernel.org/cgit/bluetooth/bluez.git/tree/doc/device-api.txt#n12
     pub fn connect(&self) -> Result<(), Box<Error>> {
-        self.call_method("Connect", None)
+        self.call_method("Connect", None, DEVICE_INTERFACE)
     }
 
     // http://git.kernel.org/cgit/bluetooth/bluez.git/tree/doc/device-api.txt#n29
     pub fn disconnect(&self) -> Result<(), Box<Error>>{
-        self.call_method("Disconnect", None)
+        self.call_method("Disconnect", None, DEVICE_INTERFACE)
     }
 
     // http://git.kernel.org/cgit/bluetooth/bluez.git/tree/doc/device-api.txt#n43
     pub fn connect_profile(&self, uuid: String) -> Result<(), Box<Error>>{
-        self.call_method("ConnectProfile", Some(&[uuid.into()]))
+        self.call_method("ConnectProfile", Some(&[uuid.into()]), DEVICE_INTERFACE)
     }
 
     // http://git.kernel.org/cgit/bluetooth/bluez.git/tree/doc/device-api.txt#n55
     pub fn disconnect_profile(&self, uuid: String) -> Result<(), Box<Error>>{
-        self.call_method("DisconnectProfile", Some(&[uuid.into()]))
+        self.call_method("DisconnectProfile", Some(&[uuid.into()]), DEVICE_INTERFACE)
     }
 
     // http://git.kernel.org/cgit/bluetooth/bluez.git/tree/doc/device-api.txt#n70
     pub fn pair(&self) -> Result<(), Box<Error>>{
-        self.call_method("Pair", None)
+        self.call_method("Pair", None, DEVICE_INTERFACE)
     }
 
     // http://git.kernel.org/cgit/bluetooth/bluez.git/tree/doc/device-api.txt#n97
     pub fn cancel_pairing(&self) -> Result<(), Box<Error>>{
-        self.call_method("CancelPairing", None)
+        self.call_method("CancelPairing", None, DEVICE_INTERFACE)
     }
 }

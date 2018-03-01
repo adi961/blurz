@@ -7,11 +7,17 @@ static SERVICE_INTERFACE: &'static str = "org.bluez.GattService1";
 static CHARACTERISTIC_INTERFACE: &'static str = "org.bluez.GattCharacteristic1";
 static DESCRIPTOR_INTERFACE: &'static str = "org.bluez.GattDescriptor1";
 static SERVICE_NAME: &'static str = "org.bluez";
+static ADVERTISEMENT: &'static str = "org.bluez.LEAdvertisingManager1";
 
 fn get_managed_objects(c: &Connection) ->  Result<Vec<MessageItem>, Box<Error>> {
     let m = try!(Message::new_method_call(SERVICE_NAME, "/", "org.freedesktop.DBus.ObjectManager", "GetManagedObjects"));
     let r = try!(c.send_with_reply_and_block(m, 1000));
     Ok(r.get_items())
+}
+
+pub fn register_advertisement() {
+    let adapter = get_adapters().unwrap();
+    println!("Adapter: {}", adapter[0]);
 }
 
 pub fn get_adapters() -> Result<Vec<String>, Box<Error>> {
