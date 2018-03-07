@@ -5,8 +5,9 @@ use hex::FromHex;
 use std::error::Error;
 
 static ADAPTER_INTERFACE: &'static str = "org.bluez.Adapter1";
+static ADVERTISEMENT_INTERFACE: &'static str = "org.bluez.LEAdvertisingManager1";
+//static ADVERTISEMENT_INTERFACE: &'static str = "org.bluez.LEAdvertising";
 
-#[derive(Clone, Debug)]
 pub struct BluetoothAdapter {
     object_path: String,
 }
@@ -16,10 +17,6 @@ impl BluetoothAdapter {
         BluetoothAdapter {
             object_path: object_path,
         }
-    }
-
-    pub fn myFunc() {
-        bluetooth_utils::register_advertisement();
     }
 
     pub fn init() -> Result<BluetoothAdapter, Box<Error>> {
@@ -47,6 +44,10 @@ impl BluetoothAdapter {
         self.object_path.clone()
     }
 
+    pub fn set_advertisement(&self, device: String) -> Result<(), Box<Error>> {
+        self.call_method("RegisterAdvertisement", Some(&[MessageItem::ObjectPath(device.into())]), ADVERTISEMENT_INTERFACE)
+    }
+
     pub fn get_first_device(&self) -> Result<BluetoothDevice, Box<Error>> {
         let devices = try!(bluetooth_utils::list_devices(&self.object_path));
 
@@ -69,8 +70,9 @@ impl BluetoothAdapter {
         bluetooth_utils::set_property(ADAPTER_INTERFACE, &self.object_path, prop, value)
     }
 
-    fn call_method(&self, method: &str, param: Option<&[MessageItem]>) -> Result<(), Box<Error>> {
-        bluetooth_utils::call_method(ADAPTER_INTERFACE, &self.object_path, method, param)
+    fn call_method(&self, method: &str, param: Option<&[MessageItem]>, interface: &str) -> Result<(), Box<Error>> {
+        //bluetooth_utils::call_method(ADAPTER_INTERFACE, &self.object_path, method, param)
+        bluetooth_utils::call_method(interface, &self.object_path, method, param)
     }
 
 /*
@@ -231,6 +233,6 @@ impl BluetoothAdapter {
 
     // http://git.kernel.org/cgit/bluetooth/bluez.git/tree/doc/adapter-api.txt#n40
     pub fn remove_device(&self, device: String) -> Result<(), Box<Error>> {
-        self.call_method("RemoveDevice", Some(&[MessageItem::ObjectPath(device.into())]))
+        self.call_method("RemoveDevice", Some(&[MessageItem::ObjectPath(device.into())]), ADAPTER_INTERFACE)
     }
 }

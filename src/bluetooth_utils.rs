@@ -15,10 +15,6 @@ fn get_managed_objects(c: &Connection) ->  Result<Vec<MessageItem>, Box<Error>> 
     Ok(r.get_items())
 }
 
-pub fn register_advertisement() {
-    let adapter = get_adapters().unwrap();
-    println!("Adapter: {}", adapter[0]);
-}
 
 pub fn get_adapters() -> Result<Vec<String>, Box<Error>> {
     let mut adapters: Vec<String> = Vec::new();

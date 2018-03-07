@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::error::Error;
 
 static DEVICE_INTERFACE: &'static str = "org.bluez.Device1";
-static ADVERTISEMENT_INTERFACE: &'static str = "org.bluez.LEAdvertisingManager1"
+static ADVERTISEMENT_INTERFACE: &'static str = "org.bluez.LEAdvertisingManager1";
 
 #[derive(Clone, Debug)]
 pub struct BluetoothDevice {
@@ -221,7 +221,9 @@ impl BluetoothDevice {
  */
 
     pub fn register_advertisement(&self) -> Result<(), Box<Error>> {
-        self.call_method("RegisterAdvertisement", param, ADVERTISEMENT_INTERFACE)
+        let prop = self.set_property("Type", String::from("broadcast")).unwrap();
+        self.call_method("RegisterAdvertisement", None, ADVERTISEMENT_INTERFACE);
+        Ok(prop)
     }
 
     // http://git.kernel.org/cgit/bluetooth/bluez.git/tree/doc/device-api.txt#n12
